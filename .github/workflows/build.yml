@@ -1,0 +1,31 @@
+name: Build VST3
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Configure CMake and Fetch JUCE
+      run: |
+        cmake -B build -G "Visual Studio 17 2022" -A x64
+
+    - name: Build Plugin
+      run: |
+        cmake --build build --config Release
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: PitCoreTune-VST3
+        path: build/**/*_artefacts/Release/VST3/
